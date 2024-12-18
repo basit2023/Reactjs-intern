@@ -32,59 +32,239 @@ const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 
 ## 4. **Example Usage**
 
-### **1. Without useMemo (Inefficient Approach)**
+**Understanding `useMemo` in React with Console Examples**
+
+### **1️ Basic Example (Without `useMemo`)**
 ```javascript
 import React, { useState } from 'react';
 
-function ExpensiveComponent() {
+const ExpensiveComputation = ({ count }) => {
+  console.log('🔥 Running Expensive Computation');
+  let sum = 0;
+  for (let i = 0; i < 100000000; i++) {
+    sum += i;
+  }
+  return <p>Sum: {sum}</p>;
+};
+
+const App = () => {
   const [count, setCount] = useState(0);
-  
-  const expensiveCalculation = (num) => {
-    console.log("Calculating...");
-    for (let i = 0; i < 1000000000; i++) {} // Simulate heavy computation
-    return num * 2;
-  };
-  
-  const result = expensiveCalculation(count);
-  
+  const [text, setText] = useState('');
+
   return (
     <div>
-      <h1>Result: {result}</h1>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <h1>Without useMemo</h1>
+      <button onClick={() => setCount(count + 1)}>Increment Count: {count}</button>
+      <input 
+        type="text" 
+        placeholder="Type something..." 
+        value={text} 
+        onChange={(e) => setText(e.target.value)} 
+      />
+      <ExpensiveComputation count={count} />
     </div>
   );
-}
+};
+
+export default App;
 ```
-> **Problem:** Every time the button is clicked, `expensiveCalculation` is re-executed, even if `count` has not changed.
+
+**🔍 What's happening here?**
+1. Every time you **type** in the input field, `ExpensiveComputation` re-runs, as shown by the **console log**.
+2. The expensive computation runs even though `count` didn't change. 
+3. **Problem**: We want to avoid re-running the expensive computation when only `text` changes.
 
 ---
 
-### **2. With useMemo (Efficient Approach)**
+### **2️ Using `useMemo` to Avoid Unnecessary Computations**
 ```javascript
 import React, { useState, useMemo } from 'react';
 
-function ExpensiveComponent() {
+const ExpensiveComputation = ({ count }) => {
+  console.log('🔥 Running Expensive Computation');
+  let sum = 0;
+  for (let i = 0; i < 100000000; i++) {
+    sum += i;
+  }
+  return <p>Sum: {sum}</p>;
+};
+
+const App = () => {
   const [count, setCount] = useState(0);
-  
-  const expensiveCalculation = (num) => {
-    console.log("Calculating...");
-    for (let i = 0; i < 1000000000; i++) {} // Simulate heavy computation
-    return num * 2;
-  };
-  
-  const memoizedResult = useMemo(() => expensiveCalculation(count), [count]);
-  
+  const [text, setText] = useState('');
+
+  // useMemo will only recompute the result if `count` changes
+  const expensiveComputationResult = useMemo(() => {
+    console.log('💡 useMemo is recalculating because count changed');
+    let sum = 0;
+    for (let i = 0; i < 100000000; i++) {
+      sum += i;
+    }
+    return sum;
+  }, [count]);
+
   return (
     <div>
-      <h1>Result: {memoizedResult}</h1>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <h1>With useMemo</h1>
+      <button onClick={() => setCount(count + 1)}>Increment Count: {count}</button>
+      <input 
+        type="text" 
+        placeholder="Type something..." 
+        value={text} 
+        onChange={(e) => setText(e.target.value)} 
+      />
+      <p>Expensive Computation Result: {expensiveComputationResult}</p>
     </div>
   );
-}
+};
+
+export default App;
 ```
-> **Solution:** By using `useMemo`, React only recalculates `expensiveCalculation` when `count` changes, improving performance.
+
+**🔍 What's happening here?**
+1. Now the **expensive computation only runs when `count` changes**.
+2. If you type in the input field, the console log **does not appear**.
+3. **Performance improvement**: The expensive computation runs only when `count` changes.
 
 ---
+
+### **3️ `useMemo` for Derived State**
+Sometimes, you have **derived values** from a state, and you want to avoid recalculating them on every render.
+
+```javascript
+import React, { useState, useMemo } from 'react';
+
+const App = () => {
+  const [price, setPrice] = useState(100);
+  const [discount, setDiscount] = useState(10);
+
+  // Calculate the discounted price only if price or discount changes
+  const discountedPrice = useMemo(() => {
+    console.log('💸 Calculating Discounted Price');
+    return price - (price * discount) / 100;
+  }, [price, discount]);
+
+  return (
+    <div>
+      <h1>Derived State Example</h1>
+      <p>Original Price: ${price}</p>
+      <p>Discount: {discount}%</p>
+      <p>Discounted Price: ${discountedPrice}</p>
+
+      <button onClick={() => setPrice(price + 10)}>Increase Price</button>
+      <button onClick={() => setDiscount(discount + 5)}>Increase Discount</button>
+    </div>
+  );
+};
+
+export default App;
+```
+
+**🔍 What's happening here?**
+1. **Recalculation happens only when `price` or `discount` changes.**
+2. The console will log **"💸 Calculating Discounted Price"** only when the price or discount changes.
+3. If you click the "Increase Price" button, only then the discounted price will be recalculated.
+
+---
+
+### **4️ `useMemo` for Filtering Large Arrays**
+If you have a **large list** and want to filter it, you can avoid unnecessary re-renders using `useMemo`.
+
+```javascript
+import React, { useState, useMemo } from 'react';
+
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const items = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape'];
+
+  const filteredItems = useMemo(() => {
+    console.log('🔍 Filtering items');
+    return items.filter((item) => item.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [searchTerm]);
+
+  return (
+    <div>
+      <h1>Filtering Example</h1>
+      <input 
+        type="text" 
+        placeholder="Search for a fruit..." 
+        value={searchTerm} 
+        onChange={(e) => setSearchTerm(e.target.value)} 
+      />
+      <ul>
+        {filteredItems.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
+```
+
+**🔍 What's happening here?**
+1. The **filtering only occurs when `searchTerm` changes**.
+2. If you re-type in the input field, you’ll see **"🔍 Filtering items"** in the console only if the term changes.
+3. React avoids recomputation of the filter when the input field is unchanged.
+
+---
+
+### **5️ `useMemo` with Complex Objects**
+If you have an array of objects, sorting and mapping can be computationally expensive.
+
+```javascript
+import React, { useState, useMemo } from 'react';
+
+const App = () => {
+  const [sortBy, setSortBy] = useState('name');
+  const users = [
+    { id: 1, name: 'Alice', age: 25 },
+    { id: 2, name: 'Bob', age: 22 },
+    { id: 3, name: 'Charlie', age: 30 },
+    { id: 4, name: 'Dave', age: 20 },
+  ];
+
+  // useMemo for sorting users based on the `sortBy` field
+  const sortedUsers = useMemo(() => {
+    console.log('📋 Sorting users');
+    return [...users].sort((a, b) => (a[sortBy] > b[sortBy] ? 1 : -1));
+  }, [sortBy]);
+
+  return (
+    <div>
+      <h1>Sorting Example</h1>
+      <button onClick={() => setSortBy('name')}>Sort by Name</button>
+      <button onClick={() => setSortBy('age')}>Sort by Age</button>
+
+      <ul>
+        {sortedUsers.map((user) => (
+          <li key={user.id}>
+            {user.name} - {user.age} years old
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default App;
+```
+
+**🔍 What's happening here?**
+1. **The sorting happens only when `sortBy` changes**.
+2. If you click "Sort by Name" and "Sort by Age," you will see the log **"📋 Sorting users"** only when `sortBy` changes.
+3. **If you re-click the same sort button, it won't re-sort the array** because `useMemo` memoizes the result.
+
+---
+
+### 🔥 **Key Points to Remember**
+- `useMemo` caches expensive computations.
+- It only re-runs if **dependencies change**.
+- Useful for **filtering, sorting, and derived state**.
+- Without `useMemo`, functions are re-run on every render.
+
+
 
 ## 5. **When to Use useMemo?**
 Use `useMemo` when you have an **expensive calculation** that:
