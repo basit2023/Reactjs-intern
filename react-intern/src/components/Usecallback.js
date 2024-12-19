@@ -1,0 +1,44 @@
+import React, {useState, useCallback} from 'react'
+import Button from './Button';
+const Usecallback = () => {
+    // const [count, setCount] = useState(0);
+    // const [otherCount, setOtherCount] = useState(0);
+  
+    // // Function is created on every render
+    // const increment = () => {
+    //   setCount(prevCount => prevCount + 1);
+    // };
+  
+    // return (
+    //   <div>
+    //     <h1>Without useCallback</h1>
+    //     <p>Count in usecallback: {count}</p>
+    //     <Button onClick={increment}>Increment Count</Button>
+    //     <button onClick={() => setOtherCount(otherCount + 1)}>
+    //       Update Other Count button ({otherCount})
+    //     </button>
+    //   </div>
+    // );
+    const [count, setCount] = useState(0);
+  const [otherCount, setOtherCount] = useState(0);
+
+  // Memoize the increment function so it is not re-created on every render
+  const increment = useCallback(() => {
+    setCount(prevCount => prevCount + 1);
+  }, []); // No dependencies, so it will be created only once
+
+  return (
+    <div>
+      <h1>With useCallback</h1>
+      <p>Count: {count}</p>
+      <Button onClick={increment}>Increment Count</Button>
+      <button onClick={() => setOtherCount(otherCount + 1)}>
+        Update Other Count ({otherCount})
+      </button>
+    </div>
+  );
+}
+
+
+
+export default Usecallback

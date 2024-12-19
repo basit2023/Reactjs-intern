@@ -6,6 +6,7 @@ import UserProfile from './components/UserProfile';
 import Header from './components/Header';
 import UseEff from './components/UseEff';
 import UseMem from './components/UseMem';
+import Usecallback from './components/Usecallback';
 function App() {
 
   const email=""
@@ -62,6 +63,7 @@ function App() {
       </svg>
     </li>
     <li><Link className="text-sm text-gray-400 hover:text-gray-500" to="/usememo">UseMemo</Link></li>
+    <li><Link className="text-sm text-gray-400 hover:text-gray-500" to="/callback">Usecallback</Link></li>
   </ul>
   <a className="hidden lg:inline-block lg:ml-auto lg:mr-3 py-2 px-6 bg-gray-50 hover:bg-gray-100 text-sm text-gray-900 font-bold  rounded-xl transition duration-200" href="#">Sign In</a>
   <a className="hidden lg:inline-block py-2 px-6 bg-blue-500 hover:bg-blue-600 text-sm text-white font-bold rounded-xl transition duration-200" href="#">Sign up</a>
@@ -80,6 +82,7 @@ function App() {
         <Route path="/userprofile" element={<UserProfile />} />
         <Route path="/data" element={<UseEff />} />
         <Route path="/usememo" element={<UseMem />} />
+        <Route path="/callback" element={<Usecallback />} />
       </Routes>
     </Router>
 
