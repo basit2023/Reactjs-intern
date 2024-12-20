@@ -11,14 +11,20 @@ const Usecallback = () => {
   
     // return (
     //   <div>
-    //     <h1>Without useCallback</h1>
-    //     <p>Count in usecallback: {count}</p>
+    //     <h1 className='font-bold'>Without useCallback</h1>
+    //     <p>Count in Button: {count}</p>
     //     <Button onClick={increment}>Increment Count</Button>
+    //     <div>
     //     <button onClick={() => setOtherCount(otherCount + 1)}>
-    //       Update Other Count button ({otherCount})
+    //       Button on usecallback function :{otherCount}
     //     </button>
+    //     </div>
     //   </div>
     // );
+
+
+
+
     const [count, setCount] = useState(0);
   const [otherCount, setOtherCount] = useState(0);
 
@@ -32,9 +38,11 @@ const Usecallback = () => {
       <h1>With useCallback</h1>
       <p>Count: {count}</p>
       <Button onClick={increment}>Increment Count</Button>
-      <button onClick={() => setOtherCount(otherCount + 1)}>
+     <div>
+     <button onClick={() => setOtherCount(otherCount + 1)}>
         Update Other Count ({otherCount})
       </button>
+     </div>
     </div>
   );
 }
